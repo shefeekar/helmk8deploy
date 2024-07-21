@@ -1,7 +1,14 @@
-FROM node:13-alpine
-WORKDIR /home/shefeek/Desktop/node-hello-master
-COPY package*.json ./
-RUN  npm install
-COPY .  .
+# Stage 1: Build
+FROM node:latest AS build
+WORKDIR /app
+COPY package*.json /app/
+RUN npm install
+COPY . /app/
+
+
+# Stage 2: Serve
+FROM  node:alpine
+WORKDIR /app
+COPY --from=build /app/ .
 EXPOSE 3000
-CMD [ "npm", "start"]
+CMD ["npm", "start"]
