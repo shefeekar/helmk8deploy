@@ -10,20 +10,26 @@ pull the code for simple helloworld nodejs application for this repository https
 
 ### then build a docker image using Dockerfile
 
-```jsx
-FROM node:13-alpine
-WORKDIR /home/shefeek/Desktop/node-hello-master
-COPY package*.json ./
-RUN  npm install
-COPY .  .
+# Stage 1: Build
+FROM node:latest AS build
+WORKDIR /app
+COPY package*.json /app/
+RUN npm install
+COPY . /app/
+
+# Stage 2: deploy
+FROM  node:alpine
+WORKDIR /app
+COPY --from=build /app/ .
 EXPOSE 3000
-CMD [ "npm", "start"]
+CMD ["npm", "start"]
+
 ```
 
 save this file named as Dockerfile inside the  application directory ten build the image using the  command
 
 ```jsx
- **docker build -t myappnew:latest** 
+ **docker build -t multibuild:latest** 
 ```
 
 ### tag and push the image  into docker hub repo named shefeeekar
@@ -37,13 +43,13 @@ docker login
 Tag the image:
 
 ```jsx
-docker tag myappnew:latest shefeekar/myappnew:latest
+docker tag multibuild:latest shefeekar/multibuild:latest
 ```
 
  Push the image:
 
 ```jsx
-docker push shefeekar/myappnew:latest
+docker push shefeekar/multibuild:latest
 ```
 
 ## **create helm for deploying app in k8**
@@ -58,7 +64,7 @@ then edit the value of values.yaml with repository ‘shefeekar/myappnew and ser
 
 ```yaml
 image:
-  repository: shefeekar/myappnew
+  repository: shefeekar/multibuild
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
