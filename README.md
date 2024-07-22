@@ -9,7 +9,7 @@ pull the code for simple helloworld nodejs application for this repository https
 ```
 
 ### then build a docker image using Dockerfile
-
+```jsx
 # Stage 1: Build
 FROM node:latest AS build
 WORKDIR /app
